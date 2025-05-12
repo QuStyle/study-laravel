@@ -1,0 +1,85 @@
+networks:
+  backend:
+
+services:
+  webserver:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./src:/app/src
+      - ./api:/app/api
+      - ./config/nginx/nginx.frontend.conf:/etc/nginx/conf.d/frontend.conf
+      - ./config/nginx/nginx.api.conf:/etc/nginx/conf.d/api.conf
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./logs/nginx:/var/log/nginx/
+    environment:
+      FRONTEND_APP_HOST_NAME: "laravel.test"
+    networks:
+      - backend
+
+  php:
+    build: ./docker/php
+    user: "1000:1000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "api.laravel.test:host-gateway"
+    volumes:
+      - ./src:/app/src
+      - ./config/php/php.ini:/usr/local/etc/php/php.ini
+      - ./config/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+    environment:
+      PHP_SESSION_HANDLER: "memcached"
+      PHP_SESSION_PATH: "memcached:11211"
+      PHP_ENABLE_XDEBUG: ${PHP_ENABLE_XDEBUG}
+      XDEBUG_CONFIG: ${XDEBUG_CONFIG}
+      PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
+    networks:
+      - backend
+
+  php-api:
+    build: ./docker/php
+    user: "1000:1000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./api:/app/api
+      - ./config/php/php.ini:/usr/local/etc/php/php.ini
+      - ./config/php/xdebug.api.ini:/usr/local/etc/php/conf.d/xdebug.ini
+    environment:
+      PHP_SESSION_HANDLER: "memcached"
+      PHP_SESSION_PATH: "memcached:11211"
+      PHP_ENABLE_XDEBUG: ${PHP_ENABLE_XDEBUG}
+      XDEBUG_CONFIG: ${XDEBUG_CONFIG_API}
+      PHP_IDE_CONFIG: ${PHP_IDE_CONFIG_API}
+    networks:
+      - backend
+
+  mysql:
+    image: mariadb:10.9
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "987654123!f"
+      MYSQL_USER: "laravel"
+      MYSQL_DATABASE: "laravel"
+      MYSQL_PASSWORD: "123456789"
+    volumes:
+      - ./config/mysql/my.cnf:/etc/mysql/conf.d/app.cnf
+      - ./data/mysql:/var/lib/mysql
+    networks:
+      - backend
+
+  mongodb:
+    image: mongo:4
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongodb:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 'root'
+      MONGO_INITDB_ROOT_PASSWORD: 'password'
+    networks:
+      - backend
