@@ -59,4 +59,10 @@ RUN apk update \
     && docker-php-ext-enable xdebug \
     && pecl clear-cache
 
+COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["entrypoint.sh"]
+
 WORKDIR /app
+CMD ["php-fpm"]

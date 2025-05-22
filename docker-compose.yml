@@ -21,7 +21,7 @@ services:
 
   php:
     build: ./docker/php
-    user: "1000:1000"
+    user: "www-data:www-data"
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "api.laravel.test:host-gateway"
@@ -40,7 +40,7 @@ services:
 
   php-api:
     build: ./docker/php
-    user: "1000:1000"
+    user: "www-data:www-data"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
