@@ -28,7 +28,9 @@ RUN apk update \
         libmemcached-dev \
         curl \
         wget \
-        bash
+        bash \
+        supervisor \
+        npm
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
