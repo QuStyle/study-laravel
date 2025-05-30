@@ -10,9 +10,9 @@ services:
       - "443:443"
     volumes:
       - ./src:/app/src
-      - ./api:/app/api
+#      - ./api:/app/api
       - ./config/nginx/nginx.frontend.conf:/etc/nginx/conf.d/frontend.conf
-      - ./config/nginx/nginx.api.conf:/etc/nginx/conf.d/api.conf
+#      - ./config/nginx/nginx.api.conf:/etc/nginx/conf.d/api.conf
       - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./logs/nginx:/var/log/nginx/
     environment:
@@ -22,10 +22,10 @@ services:
 
   php:
     build: ./docker/php
-    user: "www-data:www-data"
+    user: "1000:1000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
-      - "api.laravel.test:host-gateway"
+#      - "api.laravel.test:host-gateway"
     volumes:
       - ./src:/app/src
       - ./config/php/php.ini:/usr/local/etc/php/php.ini
@@ -39,23 +39,23 @@ services:
     networks:
       - backend
 
-  php-api:
-    build: ./docker/php
-    user: "www-data:www-data"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes:
-      - ./api:/app/api
-      - ./config/php/php.ini:/usr/local/etc/php/php.ini
-      - ./config/php/xdebug.api.ini:/usr/local/etc/php/conf.d/xdebug.ini
-    environment:
-      PHP_SESSION_HANDLER: "memcached"
-      PHP_SESSION_PATH: "memcached:11211"
-      PHP_ENABLE_XDEBUG: ${PHP_ENABLE_XDEBUG}
-      XDEBUG_CONFIG: ${XDEBUG_CONFIG_API}
-      PHP_IDE_CONFIG: ${PHP_IDE_CONFIG_API}
-    networks:
-      - backend
+#  php-api:
+#    build: ./docker/php
+#    user: "1000:1000"
+#    extra_hosts:
+#      - "host.docker.internal:host-gateway"
+#    volumes:
+#      - ./api:/app/api
+#      - ./config/php/php.ini:/usr/local/etc/php/php.ini
+#      - ./config/php/xdebug.api.ini:/usr/local/etc/php/conf.d/xdebug.ini
+#    environment:
+#      PHP_SESSION_HANDLER: "memcached"
+#      PHP_SESSION_PATH: "memcached:11211"
+#      PHP_ENABLE_XDEBUG: ${PHP_ENABLE_XDEBUG}
+#      XDEBUG_CONFIG: ${XDEBUG_CONFIG_API}
+#      PHP_IDE_CONFIG: ${PHP_IDE_CONFIG_API}
+#    networks:
+#      - backend
 
   mysql:
     image: mariadb:10.9

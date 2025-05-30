@@ -64,6 +64,11 @@ RUN apk update \
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+RUN apk --no-cache add shadow \
+    && groupmod --gid 1000 www-data \
+    && usermod --uid 1000 --gid 1000 www-data \
+    && apk del shadow
+
 ENTRYPOINT ["entrypoint.sh"]
 
 WORKDIR /app
